@@ -1,6 +1,11 @@
 ---
 - hosts: all
+  vars:
+    # provided for Tomcat installation
+    http_port: 8080
+    https_port: 8443
   sudo: True
   roles:
     - apache2
     - tomcat
+    - openAM

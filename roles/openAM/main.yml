@@ -1,0 +1,3 @@
+- name: Copy OpenAM into Tomcat Directory
+  copy: src=openam/OpenAM-11.0.0.war dest=/usr/share/tomcat/webapps mode=0744
+

@@ -1,0 +1,17 @@
+- name: be sure libselinux-python are installed
+  yum: >
+    name=libselinux-python
+    state=present
+
+- name: Stop Tomcat
+  service: name=tomcat state=stopped enabled=no
+
+- name: Copy OpenAM to Tomcat
+  copy: src=openam/OpenAM-11.0.0.war dest=/usr/share/tomcat/webapps mode=0744
+
+- name: Start Tomcat
+  service: name=tomcat state=started enabled=yes
+
+- name: wait for tomcat to start
+  wait_for: port={{http_port}}
+
