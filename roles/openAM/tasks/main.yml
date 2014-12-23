@@ -4,13 +4,43 @@
     state=present
 
 - name: Stop Tomcat
-  service: name=tomcat state=stopped enabled=no
+  service: name=tomcat state=stopped enabled=yes
+
+- name: Does OpenAM exist on server already?
+  stat: path={{tc_home}}/webapps/openam.war
+  register: openam_stat
 
 - name: Copy OpenAM to Tomcat
-  copy: src=openam/OpenAM-11.0.0.war dest=/usr/share/tomcat/webapps mode=0744
+  copy: src=openam/OpenAM-11.0.0.war dest={{tc_home}}/webapps mode=0744
+  register: open_am_copied
+  when: not openam_stat.stat.exists
+
+- name: Rename OpenAM war
+  command: mv /usr/share/tomcat/webapps/OpenAM-11.0.0.war {{tc_home}}/webapps/openam.war
+  when: not openam_stat.stat.exists and open_am_copied|success
 
 - name: Start Tomcat
   service: name=tomcat state=started enabled=yes
+
+- name: Create default password for OpenAM Web Policy Agent
+  shell: echo password > /tmp/pwd.txt
+
+- name: Make password file readonly
+  command: chmod 400 /tmp/pwd.txt
+
+- name: Does Apache Web Agent exist on the server already?
+  stat: path={{web_agent_home}}/apache22_agent
+  register: agent_stat
+
+- name: Create directory for Apache Web Agent
+  command: mkdir -p {{web_agent_home}}
+  when: not agent_stat.stat.exists
+
+- name: Copy Apache Web Agent to server
+  unarchive: src=apache22_agent.tgz dest={{web_agent_home}} 
+  when: not agent_stat.stat.exists
+
+- debug: msg="Web agent must be installed manually on hosts, run {{web_agent_home}}/apache22_agent/bin/agentadmin --install"
 
 - name: wait for tomcat to start
   wait_for: port={{http_port}}

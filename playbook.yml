@@ -2,8 +2,12 @@
 - hosts: all
   vars:
     # provided for Tomcat installation
+    tc_home: /usr/share/tomcat
     http_port: 8080
     https_port: 8443
+    # for openAM installation
+    web_agent_home: /opt/web_agents
+    
   sudo: True
   roles:
     - apache2
