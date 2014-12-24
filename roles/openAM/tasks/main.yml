@@ -45,7 +45,7 @@
     cat /etc/hosts
   register: openam_hosts
 
-- debug: var=openam_hosts
+# - debug: var=openam_hosts
 
 - name: Add openamspike.local entries to /etc/hosts
   shell: > 
@@ -53,6 +53,9 @@
   when: openam_hosts.stdout.find('openam') == -1
 
 - debug: msg="Web agent must be installed manually on hosts, run {{web_agent_home}}/apache22_agent/bin/agentadmin --install"
+
+- name: Stopping apache2 httpd, see readme for further instructions
+  service: name=httpd state=stopped enabled=yes
 
 - name: wait for tomcat to start
   wait_for: port={{http_port}}

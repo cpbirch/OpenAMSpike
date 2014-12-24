@@ -22,6 +22,15 @@ The VM has been setup with port forwarding.
 
 Once host names are configurated, from the host OS, visit http://openam.openamspike.local:4080/openam/ to get to the OpenAM console.  The website can be visited at http://www.openamspike.local:3080/
 
+Setup OpenAM
+------------
+
+Browse to http://docs.forgerock.org/en/openam/11.0.0/getting-started/index/chap-first-steps.html#install-openam
+
+You'll need to complete the configuration for sections 1.4, 1.5 and 1.6.  DO NOT complete 1.7 as this playbook has done most of it.
+
+Steps 1 and 2 have already been completed by this Ansible playbook, please continue from point 3.  Open http://openam.openamspike.local:4080/openam/ in a new window.
+
 Complete the Installation
 -------------------------
 
@@ -34,7 +43,7 @@ The web agent must be installed manually, use the following bullet points to ans
 * Agent Profile Password file name : /tmp/pwd.txt
 
 1. Login to the VM $> `vagrant ssh`
-2. Run the install wizard $> `/opt/web_agents/apache22_agent/bin/agentadmin --install`
+2. Run the install wizard $> `sudo /opt/web_agents/apache22_agent/bin/agentadmin --install`
 3. Start apache $> `sudo service httpd start`
 
 Try it Out
