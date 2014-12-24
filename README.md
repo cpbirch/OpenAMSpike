@@ -1,20 +1,49 @@
 OpenAMSpike
 ===========
 
-Configuration and Code to get an OpenAM instance setup to protect resources
+Vagrant and Ansible configuration to get an OpenAM instance setup to protect resources on an apache2 web server.
 
-"vagrant up" will configure a server to have Apache2 httpd installed and Tomcat7 with OpenAM setup and running.  Tomcat is listening on port 8080 with httpd on port 80.
+Setup the VM
+------------
 
-OpenAM uses cookies for auth tokens so it needs hostnames, these have been defined as:
+`$> vagrant up`
 
-127.0.0.1	www.openamspike.local
-127.0.0.1	openam.openamspike.local
+This will configure a server to have Apache2 httpd installed and Tomcat7 with OpenAM setup and running.  Tomcat is listening on port 8080 with httpd on port 80.
 
-VM has been setup with port forwarding but you'll also need to define the server names in your host OS if you're testing from the host and use the guest VM services.
+OpenAM uses cookies for auth tokens so it needs hostnames, these have been added to the guest VM, defined as:
 
-From the host OS, visit http://openam.openamspike.local:4080/openam/ to get to the OpenAM console.  The website can be visited at http://www.openamspike.local:3080/
+`127.0.0.1	www.openamspike.local openam.openamspike.local`
 
-To complete the installation and get the authentication working, the web agent must be installed manually.
-Visit http://docs.forgerock.org/en/openam/11.0.0/getting-started/index/chap-first-steps.html#install-web-policy-agent and continue from STEP 4 (apache can be stopped with 'sudo service httpd stop').
+You'll need to add this entry to your /etc/hosts file on your host OS.
 
+The VM has been setup with port forwarding.
+* 3080 -> 80
+* 4080 -> 8080
+
+Once host names are configurated, from the host OS, visit http://openam.openamspike.local:4080/openam/ to get to the OpenAM console.  The website can be visited at http://www.openamspike.local:3080/
+
+Complete the Installation
+-------------------------
+
+The web agent must be installed manually, use the following bullet points to answer the wizard questions when runing the three steps below.
+
+* Apache Server Config Directory : /etc/httpd/conf
+* OpenAM server URL : http://openam.openamspike.local:8080/openam
+* Agent URL : http://www.openamspike.local
+* Agent Profile name : WebAgent
+* Agent Profile Password file name : /tmp/pwd.txt
+
+1. Login to the VM $> `vagrant ssh`
+2. Run the install wizard $> `/opt/web_agents/apache22_agent/bin/agentadmin --install`
+3. Start apache $> `sudo service httpd start`
+
+Try it Out
+----------
+
+1. If you haven't already done so, ensure you've logged out of the OpenAM console.
+2. Browse to http://www.openamspike.local
+3. Login as the built-in default OpenAM identity, user `demo` and password `changeit`
+4. After successfully logging in, you should be redirected to the default centos web page.
+
+In the web browser, check for the presence of a cookie called `iPlanetDirectoryPro`, this is the session token set by OpenAM which is an encrypted reference to the session that OpenAM maintains for single sign-on.
 
