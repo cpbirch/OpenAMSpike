@@ -40,6 +40,18 @@
   unarchive: src=apache22_agent.tgz dest={{web_agent_home}} 
   when: not agent_stat.stat.exists
 
+- name: Check host file for openamspike.local entries
+  shell: >
+    cat /etc/hosts
+  register: openam_hosts
+
+- debug: var=openam_hosts
+
+- name: Add openamspike.local entries to /etc/hosts
+  shell: > 
+    echo "127.0.0.1   openam.openamspike.local www.openamspike.local" >> /etc/hosts
+  when: openam_hosts.stdout.find('openam') == -1
+
 - debug: msg="Web agent must be installed manually on hosts, run {{web_agent_home}}/apache22_agent/bin/agentadmin --install"
 
 - name: wait for tomcat to start
